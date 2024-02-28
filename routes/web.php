@@ -14,9 +14,7 @@ use App\Http\Controllers\RiskController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [RiskController::class, 'index']);
 
 
 Route::resource('risks', RiskController::class);
