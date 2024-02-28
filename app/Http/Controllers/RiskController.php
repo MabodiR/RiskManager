@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Risk;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class RiskController extends Controller
 {
@@ -13,7 +15,7 @@ class RiskController extends Controller
     public function index()
     {
         $risks = Risk::all();
-        return response()->json(['risks' => $risks], 200);
+        return view('dashboard', compact('risks', 'risks'));
     }
 
     /**
@@ -33,7 +35,7 @@ class RiskController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => ['required', 'email', 'max:255', Rule::unique('risks')],
             'role' => 'required|string|max:255',
         ]);
 
@@ -47,8 +49,9 @@ class RiskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Risk $risk)
+    public function show($id)
     {
+        $risk = Risk::findOrFail($id);
        // Return a JSON response with the specified risk
        return response()->json(['risk' => $risk], 200);
     }
@@ -70,7 +73,12 @@ class RiskController extends Controller
                $request->validate([
                 'name' => 'required|string|max:255',
                 'title' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
+                'email' => [
+                    'required',
+                    'email',
+                    'max:255',
+                    Rule::unique('risks')->ignore($risk->id),
+                ],
                 'role' => 'required|string|max:255',
             ]);
     
